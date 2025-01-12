@@ -1,0 +1,104 @@
+/* General Styles */
+body {
+    font-family: 'Times New Roman', Times, serif;
+    margin: 0;
+    padding: 0;
+    background: #f4f4f4;
+    color: #000;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    max-width: 800px;
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin: 20px;
+}
+
+/* Header Styles */
+h1 {
+    text-align: center;
+    font-size: 1.8rem;
+    color: #000;
+    margin-bottom: 15px;
+    text-transform: none;
+}
+
+/* Form Styles */
+form div {
+    margin-bottom: 10px;
+}
+
+label {
+    font-size: 1rem;
+    color: #000;
+    display: block;
+    margin-bottom: 5px;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+input:focus {
+    border-color: #000;
+    outline: none;
+}
+
+button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background: #333;
+    color: #fff;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    text-transform: none;
+}
+
+button:hover {
+    background: #555;
+}
+
+/* Results Section */
+#results {
+    margin-top: 20px;
+    text-align: center;
+}
+
+#results h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #000;
+}
+
+#totalScore {
+    font-size: 1.1rem;
+    color: #000;
+    margin-bottom: 10px;
+}
+
+#feedback {
+    list-style: disc;
+    padding: 0;
+    margin-left: 20px;
+}
+
+#feedback li {
+    font-size: 1rem;
+    color: #000;
+    margin: 5px 0;
+    padding: 5px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+}
