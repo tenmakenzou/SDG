@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
         SDG13: ["I25", "I26"],
         SDG14: ["I27"],
         SDG15: ["I28"],
+        SDG16: ["I29"],
         SDG17: ["I30", "I31", "I32", "I33", "I34"]
     };
 
@@ -103,7 +104,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 let labelText = indicator;
 
-                if (indicatorPlaceholders[indicator]) {
+                if (indicator === "I25") {
+                    // Special case for I25: Only one field
+                    div.innerHTML = `
+                        <label>${labelText}:</label>
+                        <div class="indicator-inputs">
+                            <input 
+                                type="number" 
+                                class="value" 
+                                id="${indicator}_value" 
+                                name="${indicator}_value" 
+                                placeholder="Enter value" 
+                                step="0.1"
+                            >
+                        </div>
+                        <p id="${indicator}_result" class="indicator-result">Weighted Score: </p>
+                        <p id="${indicator}_feedback" class="indicator-feedback"></p>
+                    `;
+                } else if (indicatorPlaceholders[indicator]) {
                     div.innerHTML = `
                         <label>${labelText}:</label>
                         <div class="indicator-inputs">
@@ -213,107 +231,101 @@ document.addEventListener("DOMContentLoaded", () => {
 
         Object.keys(sdgs).forEach(sdg => {
             sdgs[sdg].forEach(indicator => {
-                const value1 = parseFloat(document.getElementById(`${indicator}_value1`).value);
-                const value2 = parseFloat(document.getElementById(`${indicator}_value2`).value);
-                const value3 = parseFloat(document.getElementById(`${indicator}_value3`).value);
-                const value4 = document.getElementById(`${indicator}_value4`)
-                    ? parseFloat(document.getElementById(`${indicator}_value4`).value)
-                    : NaN;
+                if (indicator === "I25") {
+                    const value = parseFloat(document.getElementById(`${indicator}_value`).value);
 
-                if (!isNaN(value1) && !isNaN(value2) && !isNaN(value3)) {
-                    let F = value1 + value2;
-                    let E = value3 + value4;
-
-                    const percentageChange = F / E;
-
-                    let result = 0;
-
-                    if (indicator === "I8" || indicator === "I9") {
-                        if (percentageChange < 1) {
-                            result = 0;
-                        } else {
-                            result = percentageChange;
-                        }
-                        const weightedScore = result * weights[indicator];
+                    if (!isNaN(value)) {
+                        const weightedScore = value * weights[indicator];
                         totalScore += weightedScore;
 
-                        displayIndicatorResults(indicator, weightedScore, `${indicator} Calculation.`);
-                    } else if (indicator === "I13" || indicator === "I17") {
-                        if (percentageChange < 1) {
-                            result = 1 / percentageChange;
-                        } else {
-                            result = 0;
-                        }
+                        displayIndicatorResults(indicator, weightedScore, `Single value calculation.`);
+                    }
+                } else {
+                    const value1 = parseFloat(document.getElementById(`${indicator}_value1`).value);
+                    const value2 = parseFloat(document.getElementById(`${indicator}_value2`).value);
+                    const value3 = parseFloat(document.getElementById(`${indicator}_value3`).value);
+                    const value4 = document.getElementById(`${indicator}_value4`)
+                        ? parseFloat(document.getElementById(`${indicator}_value4`).value)
+                        : NaN;
 
-                        const normalizedResult = result / (1 / result);
-                        const weightedScore = normalizedResult * weights[indicator];
-                        totalScore += weightedScore;
+                    if (!isNaN(value1) && !isNaN(value2) && !isNaN(value3)) {
+                        let F = value1 + value2;
+                        let E = value3 + value4;
 
-                        displayIndicatorResults(indicator, weightedScore, `${indicator} Special calculation.`);
-                    } else if (indicator === "I18") {
-                        if (percentageChange < 1) {
-                            result = 0;
-                        } else {
-                            result = percentageChange;
-                        }
-                        const weightedScore = result * weights[indicator];
-                        totalScore += weightedScore;
+                        const percentageChange = F / E;
 
-                        displayIndicatorResults(indicator, weightedScore, `${indicator} Division calculation.`);
-                    } else if (indicator === "I24") {
-                        if (percentageChange < 1) {
-                            result = 1 / percentageChange;
-                        } else {
-                            result = 0;
-                        }
+                        let result = 0;
 
-                        const weightedScore = result * weights[indicator];
-                        totalScore += weightedScore;
-
-                        displayIndicatorResults(indicator, weightedScore, `${indicator} Division calculation.`);
-                    } else if (indicator === "I30") {
-                        if (percentageChange < 1) {
-                            result = 0;
-                        } else {
-                            result = percentageChange;
-                        }
-
-                        const weightedScore = result * weights[indicator];
-                        totalScore += weightedScore;
-
-                        displayIndicatorResults(indicator, weightedScore, `${indicator} Division calculation.`);
-                    } else if (indicator === "I3") {
-                        if (value1 && value2) {
-                            const result = (value1 / value2);
+                        if (["I8", "I9"].includes(indicator)) {
+                            if (percentageChange < 1) {
+                                result = 0;
+                            } else {
+                                result = percentageChange;
+                            }
                             const weightedScore = result * weights[indicator];
                             totalScore += weightedScore;
 
-                            displayIndicatorResults(indicator, weightedScore, `${indicator} Ratio calculation.`);
-                        }
-                    } else {
-                        const result = (value1 + value2 + value3);
-                        const weightedScore = result * weights[indicator];
-                        totalScore += weightedScore;
-                    
-                        const rangeCheckIndicators1 = [
-                            "I1", "I2", "I4", "I5", "I6", "I7", "I20", "I25", "I31", "I32"
-                        ];
-                    
-                        const rangeCheckIndicators2 = [
-                            "I10", "I11", "I12", "I14", "I15", "I16", "I19", "I21", "I22", "I23", "I26", "I27", "I28", "I29", "I33", "I34"
-                        ];
-                    
-                        if (rangeCheckIndicators1.includes(indicator) && weightedScore >= 0 && weightedScore <= 2.25) {
-                            const feedbackMessage = `More things can be done.`;
-                            displayIndicatorResults(indicator, weightedScore, feedbackMessage);
-                        } else if (rangeCheckIndicators2.includes(indicator) && weightedScore  >= 0 && weightedScore  <= 2) {
-                            const feedbackMessage = ` More things can be done.`;
-                            displayIndicatorResults(indicator, weightedScore, feedbackMessage);
+                            displayIndicatorResults(indicator, weightedScore, `${indicator} Calculation.`);
+                        } else if (["I13", "I17"].includes(indicator)) {
+                            if (percentageChange < 1) {
+                                result = 1 / percentageChange;
+                            } else {
+                                result = 0;
+                            }
+
+                            const normalizedResult = result / (1 / result);
+                            const weightedScore = normalizedResult * weights[indicator];
+                            totalScore += weightedScore;
+
+                            displayIndicatorResults(indicator, weightedScore, `${indicator} Special calculation.`);
+                        } else if (indicator === "I18") {
+                            if (percentageChange < 1) {
+                                result = 0;
+                            } else {
+                                result = percentageChange;
+                            }
+                            const weightedScore = result * weights[indicator];
+                            totalScore += weightedScore;
+
+                            displayIndicatorResults(indicator, weightedScore, `${indicator} Division calculation.`);
+                        } else if (indicator === "I24") {
+                            if (percentageChange < 1) {
+                                result = 1 / percentageChange;
+                            } else {
+                                result = 0;
+                            }
+
+                            const weightedScore = result * weights[indicator];
+                            totalScore += weightedScore;
+
+                            displayIndicatorResults(indicator, weightedScore, `${indicator} Division calculation.`);
+                        } else if (indicator === "I30") {
+                            if (percentageChange < 1) {
+                                result = 0;
+                            } else {
+                                result = percentageChange;
+                            }
+
+                            const weightedScore = result * weights[indicator];
+                            totalScore += weightedScore;
+
+                            displayIndicatorResults(indicator, weightedScore, `${indicator} Division calculation.`);
+                        } else if (indicator === "I3") {
+                            if (value1 && value2) {
+                                const result = (value1 / value2);
+                                const weightedScore = result * weights[indicator];
+                                totalScore += weightedScore;
+
+                                displayIndicatorResults(indicator, weightedScore, `${indicator} Ratio calculation.`);
+                            }
                         } else {
+                            const result = (value1 + value2 + value3);
+                            const weightedScore = result * weights[indicator];
+                            totalScore += weightedScore;
+
                             displayIndicatorResults(indicator, weightedScore, `${indicator} Sum calculation.`);
                         }
                     }
-                    
                 }
             });
         });
